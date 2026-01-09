@@ -33,6 +33,9 @@ class GeoAlertActivity : ComponentActivity() {
         getSharedPreferences("geo_prefs", MODE_PRIVATE)
     }
 
+    // Mutable state for live location
+    private var liveLocationState: MutableState<GeoPoint?> = mutableStateOf(null)
+
     private val fenceStatusReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             // Receiver logic
@@ -63,7 +66,8 @@ class GeoAlertActivity : ComponentActivity() {
                     onGeofenceRemove = {
                         geofencingClient.removeGeofences(listOf("USER_GEOFENCE"))
                     },
-                    fusedLocationClient = fusedLocationClient
+                    fusedLocationClient = fusedLocationClient,
+                    liveLocationState = liveLocationState
                 )
             }
         }
@@ -87,7 +91,8 @@ class GeoAlertActivity : ComponentActivity() {
             object : LocationCallback() {
                 override fun onLocationResult(result: LocationResult) {
                     val loc = result.lastLocation ?: return
-                    // Location update received, will be used in Composable
+                    // Update the mutable state with new location
+                    liveLocationState.value = GeoPoint(loc.latitude, loc.longitude)
                 }
             },
             Looper.getMainLooper()
@@ -160,13 +165,16 @@ class GeoAlertActivity : ComponentActivity() {
 fun GeoAlertScreen(
     onGeofenceAdd: (Double, Double, Float) -> Unit,
     onGeofenceRemove: () -> Unit,
-    fusedLocationClient: FusedLocationProviderClient
+    fusedLocationClient: FusedLocationProviderClient,
+    liveLocationState: MutableState<GeoPoint?>
 ) {
     var selectedPoint by remember { mutableStateOf<GeoPoint?>(null) }
     var radius by remember { mutableStateOf(200f) }
-    var liveLocation by remember { mutableStateOf<GeoPoint?>(null) }
     var fenceStatus by remember { mutableStateOf("Tap on map to select location") }
     var liveStatus by remember { mutableStateOf("UNKNOWN") }
+
+    // Observe live location from the activity's state
+    val liveLocation = liveLocationState.value
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Column(

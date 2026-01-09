@@ -27,15 +27,18 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
+import androidx.core.content.edit
 import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.delay
 import java.util.*
 
 enum class Screen {
-    SPLASH, PROFILE_SETUP, MAIN, PROFILE_EDIT
+    LOGIN, SPLASH, PROFILE_SETUP, MAIN, PROFILE_EDIT
 }
 
 class MainActivity : ComponentActivity(), TextToSpeech.OnInitListener {
@@ -63,17 +66,20 @@ class MainActivity : ComponentActivity(), TextToSpeech.OnInitListener {
         requestPermissions()
 
         setContent {
-            var screen by remember { mutableStateOf(Screen.SPLASH) }
-
-            LaunchedEffect(Unit) {
-                delay(2000)
-                screen =
-                    if (prefs.getBoolean("profile_done", false))
-                        Screen.MAIN else Screen.PROFILE_SETUP
-            }
+            var screen by remember { mutableStateOf(Screen.LOGIN) }
 
             when (screen) {
-                Screen.SPLASH -> SplashScreen()
+                Screen.LOGIN -> LoginScreen { screen = Screen.SPLASH }
+
+                Screen.SPLASH -> {
+                    LaunchedEffect(Unit) {
+                        delay(2000)
+                        screen =
+                            if (prefs.getBoolean("profile_done", false))
+                                Screen.MAIN else Screen.PROFILE_SETUP
+                    }
+                    SplashScreen()
+                }
 
                 Screen.PROFILE_SETUP -> ProfileScreen(false, prefs) { n, a, c ->
                     saveProfile(n, a, c)
@@ -111,12 +117,12 @@ class MainActivity : ComponentActivity(), TextToSpeech.OnInitListener {
     }
 
     private fun saveProfile(name: String, address: String, contact: String) {
-        prefs.edit()
-            .putString("name", name)
-            .putString("home_address", address)
-            .putString("emergency_contact", contact)
-            .putBoolean("profile_done", true)
-            .apply()
+        prefs.edit {
+            putString("name", name)
+            putString("home_address", address)
+            putString("emergency_contact", contact)
+            putBoolean("profile_done", true)
+        }
     }
 
     private fun startSpeechRecognition() {
@@ -316,6 +322,129 @@ fun MainScreen(onMicClick: () -> Unit, onProfileClick: () -> Unit) {
         }
 
         Spacer(Modifier.weight(1f))
+    }
+}
+
+@Composable
+fun LoginScreen(onLoginSuccess: () -> Unit) {
+    var username by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf("") }
+    var isPasswordVisible by remember { mutableStateOf(false) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                Brush.verticalGradient(
+                    listOf(Color(0xFF4FACFE), Color(0xFF00F2FE))
+                )
+            )
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        // Logo/Title
+        Text(
+            text = "🔐 Mind Anchor",
+            fontSize = 36.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.White,
+            modifier = Modifier.padding(bottom = 32.dp)
+        )
+
+        // Login Card
+        Card(
+            shape = RoundedCornerShape(24.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    "Login",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(bottom = 24.dp)
+                )
+
+                // Username Field
+                OutlinedTextField(
+                    value = username,
+                    onValueChange = { username = it; errorMessage = "" },
+                    label = { Text("Username") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    leadingIcon = { Text("👤") }
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Password Field
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { password = it; errorMessage = "" },
+                    label = { Text("Password") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                    leadingIcon = { Text("🔑") },
+                    trailingIcon = {
+                        IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
+                            Text(if (isPasswordVisible) "👁" else "🙈")
+                        }
+                    }
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // Error Message
+                if (errorMessage.isNotEmpty()) {
+                    Text(
+                        text = errorMessage,
+                        color = Color.Red,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Login Button
+                Button(
+                    onClick = {
+                        when {
+                            username.isEmpty() -> errorMessage = "Username cannot be empty"
+                            password.isEmpty() -> errorMessage = "Password cannot be empty"
+                            username == "Mind" && password == "Mind" -> {
+                                errorMessage = ""
+                                onLoginSuccess()
+                            }
+                            else -> errorMessage = "Invalid username or password"
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text("Login", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // Demo credentials hint
+                Text(
+                    text = "Demo: Mind / Mind",
+                    fontSize = 12.sp,
+                    color = Color.Gray,
+                    style = MaterialTheme.typography.labelSmall
+                )
+            }
+        }
     }
 }
 
