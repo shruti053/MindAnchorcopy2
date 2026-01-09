@@ -16,6 +16,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,7 +26,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -199,7 +202,7 @@ fun SplashScreen() {
             .fillMaxSize()
             .background(
                 Brush.verticalGradient(
-                    listOf(Color(0xFF4FACFE), Color(0xFF00F2FE))
+                    listOf(Color(0xFF1a2a5c), Color(0xFF0f1d3d))
                 )
             ),
         contentAlignment = Alignment.Center
@@ -208,12 +211,26 @@ fun SplashScreen() {
             visible = true,
             enter = scaleIn() + fadeIn()
         ) {
-            Text(
-                text = "Mind Anchor",
-                fontSize = 40.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
-            )
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(24.dp)
+            ) {
+                // Logo
+                Image(
+                    painter = painterResource(id = R.drawable.ic_mind_anchor_logo),
+                    contentDescription = "Mind Anchor Logo",
+                    modifier = Modifier
+                        .size(120.dp)
+                        .padding(bottom = 24.dp)
+                )
+                
+                Text(
+                    text = "Mind Anchor",
+                    fontSize = 40.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
+            }
         }
     }
 }
@@ -337,17 +354,26 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
             .fillMaxSize()
             .background(
                 Brush.verticalGradient(
-                    listOf(Color(0xFF4FACFE), Color(0xFF00F2FE))
+                    listOf(Color(0xFF1a2a5c), Color(0xFF0f1d3d))
                 )
             )
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // Logo/Title
+        // Logo
+        Image(
+            painter = painterResource(id = R.drawable.ic_mind_anchor_logo),
+            contentDescription = "Mind Anchor Logo",
+            modifier = Modifier
+                .size(100.dp)
+                .padding(bottom = 16.dp)
+        )
+        
+        // Title
         Text(
             text = "🔐 Mind Anchor",
-            fontSize = 36.sp,
+            fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
             color = Color.White,
             modifier = Modifier.padding(bottom = 32.dp)

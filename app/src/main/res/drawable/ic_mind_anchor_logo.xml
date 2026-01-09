@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="200"
+    android:viewportHeight="200">
+    
+    <!-- Anchor Shaft -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M100,40 L100,100 L95,100 L95,40 Q95,35 100,35 Q105,35 105,40 L105,100 L100,100 Z" />
+    
+    <!-- Anchor Hook Left -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M80,100 Q70,100 70,110 Q70,130 80,140 Q85,145 90,145 L100,145 L100,100 Z"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2" />
+    
+    <!-- Anchor Hook Right -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M120,100 Q130,100 130,110 Q130,130 120,140 Q115,145 110,145 L100,145 L100,100 Z"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2" />
+    
+    <!-- Anchor Ring Top -->
+    <circle
+        android:cx="100"
+        android:cy="50"
+        android:r="8"
+        android:fillColor="#FFFFFF" />
+    
+    <!-- Signal Wave 1 (Outer) -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:pathData="M100,30 Q85,30 75,40 Q65,50 65,65"
+        android:strokeColor="#C0A030"
+        android:strokeWidth="2"
+        android:strokeLineCap="round" />
+    
+    <!-- Signal Wave 2 (Middle) -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:pathData="M100,25 Q80,25 65,40 Q50,55 50,75"
+        android:strokeColor="#C0A030"
+        android:strokeWidth="2"
+        android:strokeLineCap="round" />
+    
+    <!-- Signal Dot Top -->
+    <circle
+        android:cx="100"
+        android:cy="20"
+        android:r="3"
+        android:fillColor="#C0A030" />
+    
+    <!-- Waveform - Green/Teal Color -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:pathData="M70,155 Q75,150 80,155 Q85,160 90,155 Q95,150 100,155 Q105,160 110,155 Q115,150 120,155 Q125,160 130,155"
+        android:strokeColor="#00D9FF"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    
+    <!-- Additional Waveform Line -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:pathData="M65,165 Q70,160 75,165 Q80,170 85,165 Q90,160 95,165 Q100,170 105,165 Q110,160 115,165 Q120,170 125,165 Q130,160 135,165"
+        android:strokeColor="#00D9FF"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>
